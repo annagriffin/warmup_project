@@ -19,26 +19,46 @@ class DriveSquareNode(object):
     def turn(self):
         # print("TURN")
         self.velocity.linear.x = 0
-        self.velocity.angular.z = 0.5
+        self.velocity.angular.z = 1
         self.pub.publish(self.velocity)
 
     def run(self):
-        angle = math.pi/2*2
-        print("start")
+        angle = math.pi/2
+
+        # First Line
         start = rospy.Time.now()
-        while(rospy.Time.now() - start <= rospy.Duration.from_sec(10)):
+        while(rospy.Time.now() - start <= rospy.Duration.from_sec(1)):
             self.move()
-        print("end move")
         start = rospy.Time.now()
-        # while(rospy.Time.now() - start <= rospy.Duration.from_sec(angle)):
-        #     self.turn()
-        # rospy.Timer(rospy.Duration(10.0), self.move())
-        # rospy.Timer(rospy.Duration(angle), self.turn())
-        # rospy.Timer(rospy.Duration(10), self.move())
-        # rospy.Timer(rospy.Duration(angle), self.turn())
-        # rospy.Timer(rospy.Duration(10), self.move())
-        # rospy.Timer(rospy.Duration(angle), self.turn())
-        # rospy.Timer(rospy.Duration(10), self.move())
+        while(rospy.Time.now() - start <= rospy.Duration.from_sec(angle)):
+            self.turn()
+
+        # Second Line
+        start = rospy.Time.now()
+        while(rospy.Time.now() - start <= rospy.Duration.from_sec(1)):
+            self.move()
+        start = rospy.Time.now()
+        while(rospy.Time.now() - start <= rospy.Duration.from_sec(angle)):
+            self.turn()
+
+        # Third Line
+        start = rospy.Time.now()
+        while(rospy.Time.now() - start <= rospy.Duration.from_sec(1)):
+            self.move()
+
+        start = rospy.Time.now()
+        while(rospy.Time.now() - start <= rospy.Duration.from_sec(angle)):
+            self.turn()
+
+        # Last Line
+        start = rospy.Time.now()
+        while(rospy.Time.now() - start <= rospy.Duration.from_sec(1)):
+            self.move()
+
+        # Stop
+        self.velocity.linear.x = 0
+        self.velocity.angular.z = 0
+        self.pub.publish(self.velocity)
         
 
 if __name__== "__main__":
