@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import rospy
+import math
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
 
@@ -14,14 +15,12 @@ class WallFollowNode(object):
         self.velocity.angular.z = 0
         self.k = 0.15
 
-
-
     def callback(self, msg):
         left_error =  msg.ranges[45] - msg.ranges[135]
-        print("left error: %s" %left_error)
+        # print("left error: %s" %left_error)
         #back_error = msg.ranges[135] - msg.ranges[225]
         right_error = msg.ranges[225] - msg.ranges[315]
-        print("right error: %s" %right_error)
+        # print("right error: %s" %right_error)
         #front_error = msg.ranges[45] - msg.ranges[315]
         #errors = [left_error, back_error, right_error, front_error]
         errors = [left_error, right_error]
@@ -32,10 +31,10 @@ class WallFollowNode(object):
         error_absolute_min_index = errors_absolute.index(errors_absolute_min)
         min_error = errors[error_absolute_min_index]
         
-        print("min_error: %s" % min_error)
+        # print("min_error: %s" % min_error)
         side_str = ["left", "right"]
         print("side: %s" %side_str[error_absolute_min_index])
-        if (abs(min_error) < 0.5e-10):
+        if (abs(min_error) < 0.5e-10) or math.isnan(min_error) :
             self.velocity.angular.z = 0
         else:
             self.velocity.angular.z = self.k*min_error
@@ -43,6 +42,7 @@ class WallFollowNode(object):
     def run(self):
         r = rospy.Rate(2)
         while not rospy.is_shutdown():
+            print(self.velocity)
             self.vel_pub.publish(self.velocity)
             r.sleep()
     
