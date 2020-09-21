@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 import tty
 import select
 import sys
@@ -35,14 +34,13 @@ class TeletopKeyboard(object):
             }
 
         self.speedBindings = { # (linear, angular)
-            'q': (1.1, 1.1),  # increase speed
-            'z': (0.9, 0.9),  # decrese speed
+            'q': (1.1, 1.1),  # increase speed (linear and angular)
+            'z': (0.9, 0.9),  # decrese speed (linear and angular)
             'w': (1.1, 1),    # increse linear speed
             'x': (0.9, 1),    # decrease linear speed
             'e': (1, 1.1),    # increase angular speed
             'c': (1, .9)      # decrease angular speed
             }
-
 
     def update(self, key):
         
