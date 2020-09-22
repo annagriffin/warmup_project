@@ -14,37 +14,46 @@ class WallFollowNode(object):
         self.velocity.linear.x = 0.15
         self.velocity.angular.z = 0
         self.k = 0.6
+        self.angle_LS1 = 60
+        self.angle_LS2 = 120
+        self.angle_BS1 = 160
+        self.angle_BS2 = 200
+        self.angle_RS1 = 230
+        self.angle_RS2 = 290
+        self.angle_TS1 = 330
+        self.angle_TS2 = 30 
 
     def callback(self, msg):
-        left_error =  msg.ranges[60] - msg.ranges[120]
-        print("60 degree:", msg.ranges[60])
-        print("120 degree:", msg.ranges[120])
-        print("left error: %s" %left_error)
-        #back_error = msg.ranges[135] - msg.ranges[225]
-        right_error = msg.ranges[240] - msg.ranges[300]
+        laser_scan = msg.ranges
+        left_error = laser_scan[self.angle_LS1] - laser_scan[self.angle_LS2]
+        back_error = laser_scan[self.angle_BS2] - laser_scan[self.angle_BS1]
+        right_error = laser_scan[self.angle_RS1] - laser_scan[self.angle_RS2]
+        top_error = laser_scan[self.angle_TS2] - laser_scan[self.angle_TS1]
+
+        print("RS1 degree:", laser_scan[self.angle_RS1])
+        print("RS2 degree:", laser_scan[self.angle_RS2])
         print("right error: %s" %right_error)
-        #front_error = msg.ranges[45] - msg.ranges[315]
-        #errors = [left_error, back_error, right_error, front_error]
-        errors = [left_error, right_error]
-        side_str = ["left", "right"]
+        print("BS1 degree:", laser_scan[self.angle_BS1])
+        print("BS2 degree:", laser_scan[self.angle_BS2])
+        print("back error: %s" %back_error)
+        print("top error: %s" %top_error)
+        print("left error: %s" %left_error)
+        
+        errors = [left_error, top_error, right_error, back_error]
+        side_str = ["left", "top", "right", "back"]
 
         # Find the side with minimum difference
         min_error = float("inf")
         min_error_side = None
-        for i in range(2):
+        for i in range(len(errors)):
             if (not math.isnan(errors[i])) and (abs(errors[i]) < abs(min_error)):
                 min_error = errors[i]
                 min_error_side = side_str[i]
-
-        # errors_absolute =  [abs(error) for error in errors]
-        # errors_absolute_min = min(errors_absolute)
-        # error_absolute_min_index = errors_absolute.index(errors_absolute_min)
-        # min_error = errors[error_absolute_min_index]
         
         print("min_error: %s" % min_error)
         print("side: %s" %min_error_side)
 
-        if (abs(min_error) < 0.5e-10) or min_error == float("inf"):
+        if (min_error == float("inf") or abs(min_error) < 0.5e-10):
             self.velocity.angular.z = 0
         else:
             self.velocity.angular.z = self.k*min_error
@@ -65,6 +74,8 @@ if __name__ == '__main__':
             
 
             
+
+
 
 
 
