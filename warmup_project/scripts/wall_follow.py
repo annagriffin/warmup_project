@@ -11,14 +11,15 @@ class WallFollowNode(object):
         self.vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
         self.scan_sub = rospy.Subscriber('/scan', LaserScan, self.callback)
         self.velocity = Twist()
-        self.velocity.linear.x = 0.15
+        self.velocity.linear.x = 0.3
         self.velocity.angular.z = 0
-        self.k = 0.8
-        self.angle_LS1 = 60
-        self.angle_LS2 = 120
+        self.k = 3
+        self.k_cw = 3.25
+        self.angle_LS1 = 70
+        self.angle_LS2 = 110
         self.angle_BS1 = 160
         self.angle_BS2 = 200
-        self.angle_RS1 = 230
+        self.angle_RS1 = 250
         self.angle_RS2 = 290
         self.angle_TS1 = 340
         self.angle_TS2 = 20 
@@ -55,6 +56,8 @@ class WallFollowNode(object):
 
         if (min_error == float("inf") or abs(min_error) < 0.5e-10):
             self.velocity.angular.z = 0
+        elif min_error < 0:
+            self.velocity.angular.z = self.k_cw*min_error
         else:
             self.velocity.angular.z = self.k*min_error
 
