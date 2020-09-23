@@ -13,15 +13,15 @@ class WallFollowNode(object):
         self.velocity = Twist()
         self.velocity.linear.x = 0.15
         self.velocity.angular.z = 0
-        self.k = 0.6
+        self.k = 0.8
         self.angle_LS1 = 60
         self.angle_LS2 = 120
         self.angle_BS1 = 160
         self.angle_BS2 = 200
         self.angle_RS1 = 230
         self.angle_RS2 = 290
-        self.angle_TS1 = 330
-        self.angle_TS2 = 30 
+        self.angle_TS1 = 340
+        self.angle_TS2 = 20 
 
     def callback(self, msg):
         laser_scan = msg.ranges
