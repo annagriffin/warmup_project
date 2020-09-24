@@ -67,7 +67,8 @@ class WallFollowNode(object):
             print(self.velocity)
             self.vel_pub.publish(self.velocity)
             r.sleep()
-    
+
+
 if __name__ == '__main__':
     node = WallFollowNode()
     node.run()
@@ -75,9 +76,6 @@ if __name__ == '__main__':
 
            
             
-
-            
-
 
 
 
