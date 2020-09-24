@@ -10,11 +10,11 @@ class PersonFollowerNode(object):
         rospy.init_node("person_follower")
         self.vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=1)
         self.velocity = Twist()
-        self.linear_speed = 0.5
+        self.linear_speed = 1
         self.scan_sub = rospy.Subscriber('/scan', LaserScan, self.callback)
         self.COM_x = 0
         self.COM_y = 0
-        self.k = 2
+        self.k = 1.3
 
     def callback(self, msg):
         laser_scan = msg.ranges
@@ -22,11 +22,11 @@ class PersonFollowerNode(object):
         # of the center of the neato
         self.compute_COM_x(laser_scan)
         self.compute_COM_y(laser_scan)
-        self.vel_pub.publish(Twist())
+        self.adjust()
         
     def compute_COM_x(self,scans):
         distances = []
-        for i in range (-70, 71, 1):
+        for i in range (-90, 91, 1):
             i = i % 360
             if not math.isinf(scans[i]):     
                 distances.append(scans[i] * math.sin(i))
@@ -38,7 +38,7 @@ class PersonFollowerNode(object):
         
     def compute_COM_y(self, scans):
         distances = []
-        for i in range (-70, 71, 1):
+        for i in range (-90, 91, 1):
             i = i % 360
             if not math.isinf(scans[i]):
                 distances.append(scans[i] * math.cos(i))
@@ -50,15 +50,18 @@ class PersonFollowerNode(object):
 
     def adjust(self):
         if self.COM_y != 0:
-            self.velocity.angular.z = self.k*math.tanh(self.COM_x / self.COM_y)
+            self.velocity.angular.z = self.k*math.tanh(self.COM_x / abs(self.COM_y))
             self.velocity.linear.x = self.linear_speed
             self.vel_pub.publish(self.velocity)
+        else:
+           self.velocity.angular.z = 0
+           self.velocity.linear.x = 0
+           self.vel_pub.publish(self.velocity)
+        print(self.velocity)
 
     def run(self):
-        r = rospy.Rate(3)
+        r = rospy.Rate(2)
         while not rospy.is_shutdown():
-            self.adjust()
-            print(self.velocity)
             r.sleep()
 
 if __name__ == '__main__':
