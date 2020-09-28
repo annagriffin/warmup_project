@@ -50,11 +50,12 @@ class PersonFollowerNode(object):
         print("y com:", self.COM_y)
 
     def adjust(self):
+        # pythagorean theorem to find distance to COM point
         COM_distance = math.sqrt(self.COM_x**2 + self.COM_y**2)
+
+        # set stopping threshold if it gets close
         if self.COM_y != 0 and COM_distance > 0.03:
             self.velocity.angular.z = self.k * math.tanh(self.COM_x / abs(self.COM_y))
-            r = self.k * math.tanh(self.COM_x / abs(self.COM_y)) * 57.95
-            print(round(r))
             self.velocity.linear.x = self.linear_speed
             self.vel_pub.publish(self.velocity)
         else:
