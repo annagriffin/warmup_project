@@ -12,7 +12,7 @@ For the first project of the course, Computational introduction to Robotics, our
 ## Teleop
 Our teleop node controls the robot from a variety of keyboard commands. We have chosen specific keys to map to different behaviors allowing us to control the robot. This node has commands that can control both the movement of the robot and the speed. The `cmd_vel` topic, of type Twist, was the only one we needed to publish for this node. Publishing to this topic allowed us to modify both the linear and angular velocities of the robot. While the program is running, it continuously checks to see if a key has been pressed. Upon detection of a valid key command, a new Twist object is created and the corresponding values from the look up dictionary are assigned. Movement bindings modify the x,y,z, and theta values while the speed bindings just take into account the linear and angular velocities. Once the new Twist has been initialized accordingly, we publish it in order for the robot to handle the change.
 
-![alt text](img/keybindings.png "Figure 1")
+![alt text](warmup_project/img/keybindings.png "Figure 1")
 Figure 1: Key binding mappings for direction and speed
 
 <br>
@@ -22,7 +22,7 @@ This node moves the robot in a 1m by 1m square using velocity and timing. The ro
 
 While the math that we did checks out for this behavior, it is not perfect since there is no way to determine whether or not the robot performed accurately. There is no feedback and factors like the surface on which it is running could potentially alter the precision of the calculations. We also could have used a loop in our `run()` function to make it look a little bit neater. 
 
-![Alt Text](img/drive_square.gif)
+![Alt Text](warmup_project/img/drive_square.gif)
 *Small delay at the beginning of recording
 
 <br>
@@ -30,7 +30,7 @@ While the math that we did checks out for this behavior, it is not perfect since
 ## Wall Following
 This node makes the Neato find a wall and align its orientation so that it eventually is parallel to it. This time, in addition to publishing to the `cmd_vel` topic, we also want to be able to detect where the walls are so we subscribe to the Neato's lidar readings from the `scan` topic. The message type for the `scan` topic is a LaserScan which, among other things, provides an array of ints with readings for every angle. In order to measure the position of the robot relative to the nearest wall we established three different pairs of angles to define the front, left, and right error values. 
 
-![alt text](img/wall_follower.png "Figure 2")
+![alt text](warmup_project/img/wall_follower.png "Figure 2")
 
 Figure 2: Front, left, and right error bounds
 
@@ -38,7 +38,7 @@ Figure 2: Front, left, and right error bounds
 After setting these boundaries, we use the distance readings from the lidar sensor to determine the angle at which the wall is to the robot at any given moment. Ideally, when the robot is parallel to the wall, the readings from the two angles surrounding 90 or 270 will be the same due to the rules of geometry. This is illustrated in the image below. 
 <br>
 
-![](img/not_parallel.png)    |  ![](img/parallel.png)
+![](warmup_project/img/not_parallel.png)    |  ![](warmup_project/img/parallel.png)
 :-------------------------:|:-------------------------:
 Figure 3: Not parallel to the wall: \|A\| != \|B\|.  | Figure 4: Parallel to the wall: \|A\| = \|B\|.
 <br>
@@ -47,7 +47,7 @@ In Figure 3 where the robot is not parallel to the wall, angles A and B are not 
 
 This implementation required a lot of fine tuning. The front, right, and left boundary ranges had an immense effect on the performance of the Neato. When the area was too large, there was too much noise making it difficult for it to distinguish the wall. We also started with taking into account an error boundary in the back, however this hindered its ability to trail the wall more than it helped we discovered. The k values were also very particular and affected how sensitive it was to the wall readings and the rate at which it adjusted. There was a lot of improvement from our first implementation, mostly due to tweaking these parameters and watching the robot's behavior. 
 
-![Alt Text](img/wall_follower.gif)
+![Alt Text](warmup_project/img/wall_follower.gif)
 *Small delay at the beginning of recording
 
 <br>
@@ -55,7 +55,7 @@ This implementation required a lot of fine tuning. The front, right, and left bo
 ## Person Following
 This person following node leverages center of mass calculations to determine where the largest object is in the Neato's field of view and proportional control to adjust accordingly. To gather the laser data from the area in front of the robot, we subscribed to the `scan` topic and published to the `cmd_vel` topic to make the updates once we located the center of mass. The field included 90 degrees to the left and to the right of the center of the Neato. To find the center of mass, we calculated the x and y distances from the center point of the robot in the cartesian plane. Using trigonometry identities, the *x* values are evaluated with *opposite/hypotenuse* and the *y* values can be found by *adjacent/hypotenuse*. The average of both of these sets gives us the x,y coordinate of the center of mass. Ultimately we need to know the angle that the robot needs to turn to continue following the object but we just have x and y coordinates. Therefore, we need to find the angle at which the center of mass point lies. Using the tangent identity *opposite/adjacent*, we can get the angle the center of mass point makes with the robot's center line (degree 0).
 
-![alt text](img/person_follower.png "Figure 5")
+![alt text](warmup_project/img/person_follower.png "Figure 5")
 
 Figure 5: Geometry for one point
 <br>
@@ -68,7 +68,7 @@ Before we can tell it to turn, we added a check to see how far away the calculat
 
 The goal of this challenge of the Neato is to move forward while avoiding obstacles along the way. We achieved this by applying a potential field to the goal or direction of desire and all the obstacles detected through Neato's laser scan as shown in Figure 6. We apply an attractive potential to the goal because it will attract the robot towards the goal's direction. Similarly, we apply a repulsive force to each of the obstacles detected. 
 
-![alt text](img/obstacleavoidance.png "Figure 6")
+![alt text](warmup_project/img/obstacleavoidance.png "Figure 6")
 
 Figure 6: 
 
@@ -102,7 +102,7 @@ where
     * w = arctan(delta_Y_total/delta_X_total)
 
 ### Performance and Moving Beyond
-![Alt Text](img/obstacle_avoidance.gif)
+![Alt Text](warmup_project/img/obstacle_avoidance.gif)
 The object avoidance behavior is pretty robust after we calibrated the scaling factors (a,b,s) and implemented proportional control for steering the Neato towards this desired angle while still maintaining forward velocity. For s, we have to be careful not to give it too large of a value such that when the obstacles are close to each other, their circle of influence heavily overlap each other and forces the Neato to endless spinning in circles. To improve our algorithm and moving beyond, we could include an actual goal of known position in the global frame and calculate the distance and angle of the goal relative to the Neato frame using coordinate transform and the Neato's odometry. In that case, we also need to be able to tell apart the obstacles and the goal from the laser scan using circle detection and line detection.
 
 <br>
@@ -111,7 +111,7 @@ The object avoidance behavior is pretty robust after we calibrated the scaling f
 
 We decided to give the Neato two different states, person following and wall following, for this node. When there is an object detected in front of the robot, it recognizes it as a person and starts following it. When the person disappears, the robot looks to see if there is a wall near by and if so, it gravitates towards it and starts following it. These two states are independent and are triggered by the existence of a "person" in the field of view. To illustrate these conditions, we made a simple finite state diagram. 
 
-![alt text](img/finite_state_controller.png "Figure 6")
+![alt text](warmup_project/img/finite_state_controller.png "Figure 6")
 
 <br>
 
