@@ -13,48 +13,44 @@ class WallFollowNode(object):
         self.velocity = Twist()
         self.velocity.linear.x = 0.3
         self.velocity.angular.z = 0
-        self.k = 3
-        self.k_cw = 3.25
+        self.k = 1.3 # proportional control paramter for counter clockwise
+        self.k_cw = 1 # proportional control parameter for clockwise turn
         self.angle_LS1 = 70
         self.angle_LS2 = 110
-        self.angle_BS1 = 160
-        self.angle_BS2 = 200
-        self.angle_RS1 = 250
-        self.angle_RS2 = 290
-        self.angle_TS1 = 340
-        self.angle_TS2 = 20 
+        self.angle_RS1 = 240
+        self.angle_RS2 = 300
+        self.angle_TS1 = 330
+        self.angle_TS2 = 30
 
     def callback(self, msg):
         laser_scan = msg.ranges
+
         left_error = laser_scan[self.angle_LS1] - laser_scan[self.angle_LS2]
-        back_error = laser_scan[self.angle_BS2] - laser_scan[self.angle_BS1]
+        left_scan_avg = (laser_scan[self.angle_LS1] + laser_scan[self.angle_LS2])/2
+
         right_error = laser_scan[self.angle_RS1] - laser_scan[self.angle_RS2]
+        right_scan_avg = (laser_scan[self.angle_RS1] + laser_scan[self.angle_RS2])/2
+
         top_error = laser_scan[self.angle_TS2] - laser_scan[self.angle_TS1]
-
-        print("RS1 degree:", laser_scan[self.angle_RS1])
-        print("RS2 degree:", laser_scan[self.angle_RS2])
-        print("right error: %s" %right_error)
-        print("BS1 degree:", laser_scan[self.angle_BS1])
-        print("BS2 degree:", laser_scan[self.angle_BS2])
-        print("back error: %s" %back_error)
-        print("top error: %s" %top_error)
-        print("left error: %s" %left_error)
+        top_scan_avg = (laser_scan[self.angle_TS2] + laser_scan[self.angle_TS1])/2
         
-        errors = [left_error, top_error, right_error, back_error]
-        side_str = ["left", "top", "right", "back"]
+        errors = [left_error, top_error, right_error]
+        scan_avgs = [left_scan_avg, top_scan_avg, right_scan_avg]
+        side_str = ["left", "top", "right"]
 
-        # Find the side with minimum difference
+        # Find the wall closet to robot
         min_error = float("inf")
+        min_scan_avg = float("inf")
         min_error_side = None
         for i in range(len(errors)):
-            if (not math.isnan(errors[i])) and (abs(errors[i]) < abs(min_error)):
+            if (not math.isnan(errors[i])) and (scan_avgs[i] < min_scan_avg):
                 min_error = errors[i]
                 min_error_side = side_str[i]
         
         print("min_error: %s" % min_error)
         print("side: %s" %min_error_side)
 
-        if (min_error == float("inf") or abs(min_error) < 0.5e-10):
+        if (min_error == float("inf") or abs(min_error) < 1e-2):
             self.velocity.angular.z = 0
         elif min_error < 0:
             self.velocity.angular.z = self.k_cw*min_error
