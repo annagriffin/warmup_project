@@ -120,7 +120,6 @@ class FiniteStateControlNode(object):
             self.COM_x = sum(distances) / len(distances)
         else:
             self.COM_x = 0
-        # print("x com:", self.COM_x)
 
     def compute_com_y(self, scans):
         distances = []
@@ -132,7 +131,6 @@ class FiniteStateControlNode(object):
             self.COM_y = sum(distances) / len(distances)
         else:
             self.COM_y = 0
-        # print("y com:", self.COM_y)
 
     def adjust(self):
         # pythagorean theorem to find distance to COM point
@@ -151,61 +149,6 @@ class FiniteStateControlNode(object):
         while not rospy.is_shutdown():
             self.state = self.state()
             r.sleep()
-        
-    # def callback(self, msg):
-
-    #     laser_scan = msg.ranges
-
-
-    #     # if one or more values are inf, the sum will be inf
-    #     top_error = laser_scan[:self.angle_TS2] + laser_scan[self.angle_TS1:]
-    #     top_error_sum = np.sum(top_error)
-    #     print("error sum: " + str(top_error_sum))
-    #     top_error_is_inf = np.isinf(top_error_sum)
-
-    #     # nothing detected infront of robot
-    #     if np.isinf(top_error_sum):
-
-    #         left_error = laser_scan[self.angle_LS1] - laser_scan[self.angle_LS2]
-    #         left_scan_avg = (laser_scan[self.angle_LS1] + laser_scan[self.angle_LS2])/2
-
-    #         right_error = laser_scan[self.angle_RS1] - laser_scan[self.angle_RS2]
-    #         right_scan_avg = (laser_scan[self.angle_RS1] + laser_scan[self.angle_RS2])/2
-
-    #         errors = [left_error, right_error]
-    #         scan_avgs = [left_scan_avg, right_scan_avg]
-    #         side_str = ["left", "right"]
-
-    #         # Find the wall closet to robot
-    #         min_error = float("inf")
-    #         min_scan_avg = float("inf")
-    #         min_error_side = None
-    #         for i in range(len(errors)):
-    #             if (not math.isnan(errors[i])) and (scan_avgs[i] < min_scan_avg):
-    #                 min_error = errors[i]
-    #                 min_error_side = side_str[i]
-            
-    #         # print("min_error: %s" % min_error)
-    #         # print("side: %s" %min_error_side)
-
-    #         if (min_error == float("inf") or abs(min_error) < 1e-2):
-    #             self.velocity.angular.z = 0
-    #         elif min_error < 0:
-    #             self.velocity.angular.z = self.k_cw*min_error
-    #         else:
-    #             self.velocity.angular.z = self.k_cc*min_error
-
-
-
-    #     # object detected infront of robot, start to follow
-    #     else:
-    #         print("somethiong in front")
-    #         # points 90 degress to left and 90 degress to right
-    #         # of the center of the neato
-    #         self.compute_com_x(laser_scan)
-    #         self.compute_com_y(laser_scan)
-    #         self.adjust()
-
 
 if __name__ == '__main__':
     node = FiniteStateControlNode()
