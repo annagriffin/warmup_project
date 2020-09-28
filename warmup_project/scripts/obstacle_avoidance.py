@@ -13,7 +13,7 @@ class ObstacleAvoidanceNode(object):
         self.scan_sub = rospy.Subscriber('/scan', LaserScan, self.callback)
         self.velocity = Twist()
         self.delta_x_obstacle = []
-        self.delta_y_obstable = []
+        self.delta_y_obstacle = []
         self.circle_of_influence = 1
         self.beta = 1 # strength of obstacle field
         self.alpha = 5 # strength of goal field
@@ -43,7 +43,7 @@ class ObstacleAvoidanceNode(object):
 
         # reset potential fields
         self.delta_x_obstacle = []
-        self.delta_y_obstable = []
+        self.delta_y_obstacle = []
 
         print("goal delta x, y:", goal_delta_x, ", ", goal_delta_y)
         print("x_delta_total:", delta_x_total)
@@ -55,7 +55,7 @@ class ObstacleAvoidanceNode(object):
             delta_x = - self.beta*(self.circle_of_influence-distance)*math.cos(angle)
             delta_y = - self.beta*(self.circle_of_influence-distance)*math.sin(angle)
             self.delta_x_obstacle.append(delta_x)
-            self.delta_y_obstable.append(delta_y)
+            self.delta_y_obstacle.append(delta_y)
 
     def compute_goal_potential_field(self):
         delta_x = self.alpha*self.goal_distance*math.cos(0)
