@@ -32,12 +32,12 @@ class TeletopKeyboard(object):
             '.':(-1,0,0,1), # Backward and rotate left (CCW)
             'o':(1,0,0,-1), # Forward and rotate right (CW)
             'm':(-1,0,0,-1), # Backward and rotate right (CW)
-            'k':(0,0,0,0)
+            'k':(0,0,0,0) # stop
             }
 
         self.speedBindings = { # (linear, angular)
             'q': (1.1, 1.1),  # increase speed (linear and angular)
-            'z': (0.9, 0.9),  # decrese speed (linear and angular)
+            'z': (0.9, 0.9),  # decrease speed (linear and angular)
             'w': (1.1, 1),    # increse linear speed
             'x': (0.9, 1),    # decrease linear speed
             'e': (1, 1.1),    # increase angular speed
