@@ -10,12 +10,12 @@ class PersonFollowerNode(object):
     def __init__(self):
         rospy.init_node("person_follower")
         self.vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=1)
-        self.velocity = Twist()
-        self.linear_speed = 1
         self.scan_sub = rospy.Subscriber('/scan', LaserScan, self.callback)
+        self.velocity = Twist()
+        self.linear_speed = 0.8
         self.COM_x = 0
         self.COM_y = 0
-        self.k = 1.3
+        self.k = 1.5
 
     def callback(self, msg):
         laser_scan = msg.ranges
@@ -50,15 +50,17 @@ class PersonFollowerNode(object):
         print("y com:", self.COM_y)
 
     def adjust(self):
-        if self.COM_y != 0:
+        COM_distance = math.sqrt(self.COM_x**2 + self.COM_y**2)
+        if self.COM_y != 0 and COM_distance > 0.03:
             self.velocity.angular.z = self.k * math.tanh(self.COM_x / abs(self.COM_y))
+            r = self.k * math.tanh(self.COM_x / abs(self.COM_y)) * 57.95
+            print(round(r))
             self.velocity.linear.x = self.linear_speed
             self.vel_pub.publish(self.velocity)
         else:
             self.velocity.angular.z = 0
             self.velocity.linear.x = 0
             self.vel_pub.publish(self.velocity)
-        print(self.velocity)
 
     def run(self):
         r = rospy.Rate(2)
