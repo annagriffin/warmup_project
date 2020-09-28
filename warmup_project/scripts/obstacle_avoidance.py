@@ -23,26 +23,32 @@ class ObstacleAvoidanceNode(object):
 
     def callback(self, msg):
         laser_scan = msg.ranges
+        # iterate through front laser scans
         for i in range(-90,91,2):
             i = i%360
             d = laser_scan[i]
             if d != float("inf"):
                 angle_rad = math.radians(i)
                 self.compute_obstacle_potential_field(d, angle_rad)
+
+        # Adding all vectors from repulsive obstacle and attractive goal
         goal_delta_x, goal_delta_y = self.compute_goal_potential_field()
-        print("goal delta x, y:", goal_delta_x, ", ", goal_delta_y)
         delta_x_total = sum(self.delta_x_obstacle) + goal_delta_x
         delta_y_total = sum(self.delta_y_obstable) + goal_delta_y
-        print("x_obstacle: ", len(self.delta_x_obstacle))
-        print("y_obstacle: ", len(self.delta_y_obstable))
-        print("x_delta_total:", delta_x_total)
-        print("y_delta_total:", delta_y_total)
+
+        # publish desired velocity
         self.velocity.linear.x = self.k_velocity*math.sqrt(delta_x_total**2 + delta_y_total**2)
         self.velocity.angular.z = self.k_angle*math.tanh(delta_y_total/delta_x_total)
-        print(self.velocity)
         self.vel_pub.publish(self.velocity)
+
+        # reset potential fields
         self.delta_x_obstacle = []
         self.delta_y_obstable = []
+
+        print("goal delta x, y:", goal_delta_x, ", ", goal_delta_y)
+        print("x_delta_total:", delta_x_total)
+        print("y_delta_total:", delta_y_total)
+        print(self.velocity)
 
     def compute_obstacle_potential_field(self, distance, angle):
         if distance <= self.circle_of_influence:
@@ -60,7 +66,6 @@ class ObstacleAvoidanceNode(object):
         r = rospy.Rate(2)
         while not rospy.is_shutdown():
             r.sleep()
-
 
 if __name__ == '__main__':
     node = ObstacleAvoidanceNode()
