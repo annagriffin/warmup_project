@@ -1,6 +1,6 @@
 # CompRobo: Warmup Project
-##### Anna Griffin, Sherrie Shen
-##### September 28, 2020
+<sub> Anna Griffin, Sherrie Shen </sub>
+<sub> September 28, 2020</sub>
 
 <br>
 
@@ -11,7 +11,6 @@ For the first project of the course Computational introduction to Robotics, our 
 
 ### Teleop
 Our teleop node controls the robot from a variety of keyboard commands. We have chosen specific keys to map to different behaviors allowing us to control the robot with keyboard commands. This node has commands that can control both the movement of the robot and the speed. The \verb|cmd_vel| topic, of type Twist, was the only one we needed to publish for this node. This allowed us to modify the both the linear and angular velocities of the robot. While the program is running, it continuously checks to see if a key has been pressed. Upon detection of a valid key command, a new Twist object is created and the corresponding values from the look up dictionary are assigned. Movement bindings modify the x,y,z, and theta values while the speed bindings just take into account the linear and angular velocities. Once the new Twist has been initialized accordingly, we publish it in order for the robot to handle the change.
-
 ![alt text](img/keybindings.png "Figure 1")
 Figure 1: Key binding mappings for direction and speed
 
