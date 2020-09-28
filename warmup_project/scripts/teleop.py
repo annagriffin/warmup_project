@@ -31,7 +31,7 @@ class TeletopKeyboard(object):
             'u':(1,0,0,1), # Forward and rotate left (CCW)
             '.':(-1,0,0,1), # Backward and rotate left (CCW)
             'o':(1,0,0,-1), # Forward and rotate right (CW)
-            'm':(-1,0,0,-1) # Backward and rotate right (CW)
+            'm':(-1,0,0,-1), # Backward and rotate right (CW)
             'k':(0,0,0,0)
             }
 

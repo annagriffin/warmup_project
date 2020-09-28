@@ -34,7 +34,7 @@ class ObstacleAvoidanceNode(object):
         # Adding all vectors from repulsive obstacle and attractive goal
         goal_delta_x, goal_delta_y = self.compute_goal_potential_field()
         delta_x_total = sum(self.delta_x_obstacle) + goal_delta_x
-        delta_y_total = sum(self.delta_y_obstable) + goal_delta_y
+        delta_y_total = sum(self.delta_y_obstacle) + goal_delta_y
 
         # publish desired velocity
         self.velocity.linear.x = self.k_velocity*math.sqrt(delta_x_total**2 + delta_y_total**2)
